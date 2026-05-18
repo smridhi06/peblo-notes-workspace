@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const api = axios.create({ baseURL: "/api" });
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const api = axios.create({ baseURL: `${BASE_URL}/api` });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
@@ -50,8 +51,7 @@ export const shareApi = {
   generate: (note_id: string) => api.post(`/shared/generate/${note_id}`),
   revoke: (note_id: string) => api.delete(`/shared/revoke/${note_id}`),
   getPublic: (share_id: string) =>
-    axios.get(`/api/shared/${share_id}`),
-};
+    axios.get(`${BASE_URL}/api/shared/${share_id}`),
 
 export const insightsApi = {
   get: () => api.get("/insights"),
