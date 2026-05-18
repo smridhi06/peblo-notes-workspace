@@ -8,21 +8,21 @@ from auth_utils import get_current_user
 
 router = APIRouter()
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 async def call_gemini(prompt: str) -> str:
-    if not GEMINI_API_KEY:
+    if not GROQ_API_KEY:
         raise HTTPException(status_code=500, detail="AI API key not configured")
     async with httpx.AsyncClient(timeout=25) as client:
         resp = await client.post(
-            f"{GEMINI_URL}?key={GEMINI_API_KEY}",
-            json={"contents": [{"parts": [{"text": prompt}]}]}
+            GROQ_URL,
+            headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
+            json={"model": "llama3-8b-8192", "messages": [{"role": "user", "content": prompt}], "max_tokens": 500}
         )
         if resp.status_code != 200:
             raise HTTPException(status_code=502, detail=f"AI service error: {resp.text[:300]}")
-        data = resp.json()
-        return data["candidates"][0]["content"]["parts"][0]["text"]
+        return resp.json()["choices"][0]["message"]["content"]
 
 class GenerateRequest(BaseModel):
     note_id: str
