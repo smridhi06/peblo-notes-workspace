@@ -8,7 +8,7 @@ from auth_utils import get_current_user
 
 router = APIRouter()
 
-GEMINI_API_KEY = os.getenv("AIzaSyBVS5AFBxWhYTliynvZ6UQAb46VopmO0qo", "")
+GEMINI_API_KEY = os.getenv("AIzaSyDfnwXdTTNML2JS_G9L8OKbkxEZS3psYDc", "")
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
 async def call_gemini(prompt: str) -> str:
