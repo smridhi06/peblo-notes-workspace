@@ -7,7 +7,11 @@ app = FastAPI(title="Peblo Notes API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://peblo-notes-workspace.vercel.app",
+        "https://peblo-notes-workspace-p7n4fm5pp-smridhis-projects-2ccd97e6.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
