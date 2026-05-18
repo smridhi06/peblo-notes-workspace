@@ -8,29 +8,21 @@ from auth_utils import get_current_user
 
 router = APIRouter()
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
-ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
+GEMINI_API_KEY = os.getenv("AIzaSyBVS5AFBxWhYTliynvZ6UQAb46VopmO0qo", "")
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
-async def call_claude(prompt: str) -> str:
-    if not ANTHROPIC_API_KEY:
+async def call_gemini(prompt: str) -> str:
+    if not GEMINI_API_KEY:
         raise HTTPException(status_code=500, detail="AI API key not configured")
-    headers = {
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-    }
-    body = {
-        "model": "claude-haiku-4-5-20251001",
-        "max_tokens": 500,
-        "messages": [{"role": "user", "content": prompt}],
-    }
     async with httpx.AsyncClient(timeout=25) as client:
-        resp = await client.post(ANTHROPIC_URL, headers=headers, json=body)
+        resp = await client.post(
+            f"{GEMINI_URL}?key={GEMINI_API_KEY}",
+            json={"contents": [{"parts": [{"text": prompt}]}]}
+        )
         if resp.status_code != 200:
-            error_detail = resp.text[:300]
-            raise HTTPException(status_code=502, detail=f"AI service error: {error_detail}")
+            raise HTTPException(status_code=502, detail=f"AI service error: {resp.text[:300]}")
         data = resp.json()
-        return data["content"][0]["text"]
+        return data["candidates"][0]["content"]["parts"][0]["text"]
 
 class GenerateRequest(BaseModel):
     note_id: str
@@ -60,7 +52,7 @@ Respond with exactly this JSON structure:
   "suggested_title": "A better title for this note"
 }}"""
     try:
-        raw = await call_claude(prompt)
+        raw = await call_gemini(prompt)
         raw = raw.strip()
         if raw.startswith("```"):
             raw = raw.split("```")[1]
