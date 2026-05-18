@@ -18,7 +18,7 @@ async def call_gemini(prompt: str) -> str:
         resp = await client.post(
             GROQ_URL,
             headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
-            json={"model": "llama3-8b-8192", "messages": [{"role": "user", "content": prompt}], "max_tokens": 500}
+            json={"model": "llama-3.1-8b-instant", "messages": [{"role": "user", "content": prompt}], "max_tokens": 500}
         )
         if resp.status_code != 200:
             raise HTTPException(status_code=502, detail=f"AI service error: {resp.text[:300]}")
