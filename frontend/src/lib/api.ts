@@ -52,6 +52,7 @@ export const shareApi = {
   revoke: (note_id: string) => api.delete(`/shared/revoke/${note_id}`),
   getPublic: (share_id: string) =>
     axios.get(`${BASE_URL}/api/shared/${share_id}`),
+};
 
 export const insightsApi = {
   get: () => api.get("/insights"),
